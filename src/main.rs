@@ -46,21 +46,38 @@ fn main() {
     let mut req_buffer = [0;512];
 
     // listening to incoming requests in an infinite loop
-    // listner.incoming() returns a 'std::result::Result<std::net::TcpStream, std::io::Error>'
+    // listner.incoming() waits until a request comes in 
+    // and returns a 'std::result::Result<std::net::TcpStream, std::io::Error>' whenever a request drops 
     // which should be unwrapped/matched to get 'std::net::TcpStream' which contains our Tcp request
     // and acts a portal to send back the response for incoming Tcp request 
     // assume 'std::net::TcpStream' as a special envelope that is used to recieve Tcp request 
     // and send Tcp respose 
     for stream in listner.incoming() {
         
+        // getting actual Tcp::stream from Result type given by listener
         let mut stream = stream.unwrap();
+
+        // stream does not returns Tcp request directly , instead it writes it into 
+        // empty byte array we provide 
         stream.read(&mut req_buffer).unwrap();
+        
+        // parsing request (which is stored in req_buffer) from [u8] to more readable and usable data structure 
         let request = request_proc::parse_request(&mut String::from_utf8_lossy(&req_buffer).to_string()).unwrap();
         
+        // using match as case-switch to send requests to be executed in different thread-pools
         match request.path {
         ref path if path == &home_route => home_pool.execute(|| home(stream)),
-        ref path if path == &route_2 => route2pool.execute(|| {route1(stream)}),
-        ref path if path == &route_3 => route3pool.execute(|| {route2(stream)}),
+        ref path if path == &route_2 => route2pool.execute(|| route1(stream)),
+        ref path if path == &route_3 => route3pool.execute(|| route2(stream)),
+
+        // _ handles all the cases that cannot be handled in our defined paths 
+        // since we dont have what use is asking for so according to internet standard
+        // we will return Error 404
+        // we will send response by stream.write(b"some response") method in stream 
+        // response is always sent as &[u8] (refrance to byte array) 
+        // stream.write returns an Result<usize> that should be checked as there is a real
+        // possibility of respose writing failure 
+        // if everything goes well it returns number bytes sent as response (which is useless in most cases)
         _ => {stream.write(b"Error 404").unwrap();}
         }
                 
