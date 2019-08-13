@@ -1,14 +1,17 @@
 use std::net::{TcpListener,TcpStream};
 use std::io::{Read,Write};
 use std::env;
+
 mod thread_pool;
 mod request_proc;
+
 fn main() {
 
     let pool_size : usize = match env::var("THREAD_POOL_SIZE_FOR_EACH_ROUTE"){
         Ok(var)=> var.parse().expect("THREAD_POOL_SIZE_FOR_EACH_ROUTE can only be a unsigned integer") ,
         Err(_s)=>2
     };
+
     let port = match env::var("RUST_SERVER_PORT"){
         Ok(var)=> var ,
         Err(_s)=>"0.0.0.0:7878".to_string()
