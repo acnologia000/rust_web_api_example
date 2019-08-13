@@ -22,28 +22,36 @@ fn main() {
     println!("> Using {} as default thread pool size for each route \n> using {} as port",pool_size,port);
 
     let listner  = TcpListener::bind(&port).expect("binding Failure");
+    
     //declaring string pattern for all routes 
     let _home_route = String::from_utf8_lossy(b"/").to_string();
     let _route_2 = String::from_utf8_lossy(b"/r2").to_string();
     let _route_3 = String::from_utf8_lossy(b"/r3").to_string();
+    
     //making thread pool for each route
     let home_pool = thread_pool::ThreadPool::new(pool_size);
     let route2pool = thread_pool::ThreadPool::new(pool_size);
     let route3pool = thread_pool::ThreadPool::new(pool_size);
+    
+    //buffer to store request
     let mut req_buffer = [0;512];
+    // listening to incoming requests 
+
     for stream in listner.incoming() {
+        
         let mut stream = stream.unwrap();
         stream.read(&mut req_buffer).unwrap();
+        
         let request = request_proc::parse_request(&mut String::from_utf8_lossy(&req_buffer).to_string());
         let request = request.unwrap();
+
         match request.path {
         ref path if path == &_home_route => home_pool.execute(|| home(stream)),
         ref path if path == &_route_2 => route2pool.execute(|| {route1(stream)}),
         ref path if path == &_route_3 => route3pool.execute(|| {route2(stream)}),
         _ => {stream.write(b"Error 404").unwrap();}
         }
-        
-        
+                
     }
 }
 
