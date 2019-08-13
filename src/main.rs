@@ -66,6 +66,9 @@ fn main() {
         
         // using match as case-switch to send requests to be executed in different thread-pools
         match request.path {
+
+        // comparing refrance to path inside request to routes and 
+        // accordingly execute appropriate functions in designated threa pools
         ref path if path == &home_route => home_pool.execute(|| home(stream)),
         ref path if path == &route_2 => route2pool.execute(|| route1(stream)),
         ref path if path == &route_3 => route3pool.execute(|| route2(stream)),
