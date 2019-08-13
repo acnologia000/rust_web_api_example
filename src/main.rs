@@ -67,8 +67,8 @@ fn main() {
         // using match as case-switch to send requests to be executed in different thread-pools
         match request.path {
 
-        // comparing refrance to path inside request to routes and 
-        // accordingly execute appropriate functions in designated threa pools
+        // compairing refrance to path inside request to routes and 
+        // accordingly execute appropriate functions in designated thread pools
         ref path if path == &home_route => home_pool.execute(|| home(stream)),
         ref path if path == &route_2 => route2pool.execute(|| route1(stream)),
         ref path if path == &route_3 => route3pool.execute(|| route2(stream)),
@@ -77,7 +77,7 @@ fn main() {
         // since we dont have what use is asking for so according to internet standard
         // we will return Error 404
         // we will send response by stream.write(b"some response") method in stream 
-        // response is always sent as &[u8] (refrance to byte array) 
+        // response is always written as &[u8] (refrance to byte array) 
         // stream.write returns an Result<usize> that should be checked as there is a real
         // possibility of respose writing failure 
         // if everything goes well it returns number bytes sent as response (which is useless in most cases)
