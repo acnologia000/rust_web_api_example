@@ -41,10 +41,8 @@ fn main() {
         
         let mut stream = stream.unwrap();
         stream.read(&mut req_buffer).unwrap();
+        let request = request_proc::parse_request(&mut String::from_utf8_lossy(&req_buffer).to_string()).unwrap();
         
-        let request = request_proc::parse_request(&mut String::from_utf8_lossy(&req_buffer).to_string());
-        let request = request.unwrap();
-
         match request.path {
         ref path if path == &_home_route => home_pool.execute(|| home(stream)),
         ref path if path == &_route_2 => route2pool.execute(|| {route1(stream)}),
