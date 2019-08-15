@@ -53,17 +53,11 @@ pub fn proc_req(request: &mut String) -> (bool,bool,bool) {
     (br,gz,deflate)
 }
 
-// impl Request {
-//    pub fn print(&self) {
-//         println!("http req struct -> ");
-//         println!("{}",self.http_version);
-//         println!("{}",self.method);
-//         println!("{}",self.path);
-//         println!("{}",self.gzip);
-//         println!("{}",self.brotli);
-//     }
-// }
-
+impl Request {
+    pub fn to_string(&self) -> String{
+       return format!("{}\n{}\n{}\n{}\n{}\n{}",self.http_version,self.method,self.path,self.gzip,self.brotli,self.deflate);
+    }
+}
 // site version
 // pub fn parse_request(request: &mut String) -> Result<Request, ()> {
 //     let mut parts = request.split(" ");

@@ -88,7 +88,8 @@ fn main() {
 }
 
 fn home(mut stream :TcpStream,request :request_proc::Request) {
-   stream.write(format!("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home <br> request path was {} ",request.path).as_bytes()).expect("failed to write");
+   println!("{}",request.to_string());
+   stream.write(format!("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home <br> request was {} ",request.to_string()).as_bytes()).expect("failed to write");
 }
 
 fn route1(mut stream :TcpStream) {
