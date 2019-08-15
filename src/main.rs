@@ -65,13 +65,13 @@ fn main() {
         let request = request_proc::parse_request(&mut String::from_utf8_lossy(&req_buffer).to_string()).unwrap();
         
         // using match as case-switch to send requests to be executed in different thread-pools
-        match request.path {
+        match request {
 
         // compairing refrance to path inside request to routes and 
         // accordingly execute appropriate functions in designated thread pools
-        ref path if path == &home_route => home_pool.execute(|| home(stream)),
-        ref path if path == &route_2 => route2pool.execute(|| route1(stream)),
-        ref path if path == &route_3 => route3pool.execute(|| route2(stream)),
+        ref path if path.path == home_route => home_pool.execute(|| home(stream,request)),
+        ref path if path.path == route_2 => route2pool.execute(|| route1(stream)),
+        ref path if path.path == route_3 => route3pool.execute(|| route2(stream)),
 
         // _ handles all the cases that cannot be handled in our defined paths 
         // since we dont have what use is asking for so according to internet standard
@@ -87,8 +87,8 @@ fn main() {
     }
 }
 
-fn home(mut stream :TcpStream) {
-   stream.write("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home".as_bytes()).expect("failed to write");
+fn home(mut stream :TcpStream,request :request_proc::Request) {
+   stream.write(format!("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home <br> request path was {} ",request.path).as_bytes()).expect("failed to write");
 }
 
 fn route1(mut stream :TcpStream) {
