@@ -99,3 +99,5 @@ fn route1(mut stream :TcpStream) {
 fn route2(mut stream :TcpStream) {
    stream.write("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from route 2".as_bytes()).expect("failed to write");
 }
+
+// set env var for speed optimization during release build <RUSTFLAGS="-C target-cpu=native">
