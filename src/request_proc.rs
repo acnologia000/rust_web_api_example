@@ -1,61 +1,71 @@
-
 pub struct Request {
-pub http_version: String,
-pub method: String,
-pub path: String,
+    pub http_version: String,
+    pub method: String,
+    pub path: String,
 
-pub gzip:bool,
-pub brotli:bool,
-pub deflate:bool
+    pub gzip: bool,
+    pub brotli: bool,
+    pub deflate: bool,
 }
 
 pub fn parse_request(request: &mut String) -> Result<Request, ()> {
     let mut parts = request.split(" ");
 
-    let method = parts.next().unwrap().to_string(); 
-    let path =  parts.next().unwrap().to_string(); 
-    let http_version = parts.next().unwrap().to_string(); 
-    
-    let (br,gzip,deflate) = proc_req(request);
-    
-    Ok( Request {
+    let method = parts.next().unwrap().to_string();
+    let path = parts.next().unwrap().to_string();
+    let http_version = parts.next().unwrap().to_string();
+
+    let (br, gzip, deflate) = proc_req(request);
+
+    Ok(Request {
         http_version: http_version,
         method: method,
         path: path,
-        gzip : gzip,
-        brotli:br,
-        deflate:deflate
-    } )
+        gzip: gzip,
+        brotli: br,
+        deflate: deflate,
+    })
 }
 
-#[inline(always)] 
-pub fn proc_req(request: &mut String) -> (bool,bool,bool) {
-    let parts:Vec<&str> = request.split(" ").collect();
-    let mut br  = false ;
-    let mut gz = false ;
-    let mut deflate = false ;
+#[inline(always)]
+pub fn proc_req(request: &mut String) -> (bool, bool, bool) {
+    let parts: Vec<&str> = request.split(" ").collect();
+    let mut br = false;
+    let mut gz = false;
+    let mut deflate = false;
 
     for i in 0..parts.len() {
-        
         if parts[i].contains("Accept-Encoding") {
-            if parts[i+1].contains("br") || parts[i+2].contains("br") || parts[i+3].contains("br") {
-                br = true ;    
+            if parts[i + 1].contains("br")
+                || parts[i + 2].contains("br")
+                || parts[i + 3].contains("br")
+            {
+                br = true;
             }
-            if parts[i+1].contains("gzip") || parts[i+2].contains("gzip") || parts[i+3].contains("gzip") {
-                gz = true ;    
+            if parts[i + 1].contains("gzip")
+                || parts[i + 2].contains("gzip")
+                || parts[i + 3].contains("gzip")
+            {
+                gz = true;
             }
-            if parts[i+1].contains("deflate") || parts[i+2].contains("deflate") || parts[i+3].contains("deflate") {
-                deflate = true ;    
+            if parts[i + 1].contains("deflate")
+                || parts[i + 2].contains("deflate")
+                || parts[i + 3].contains("deflate")
+            {
+                deflate = true;
             }
         }
     }
 
-    (br,gz,deflate)
+    (br, gz, deflate)
 }
 
 impl Request {
-    pub fn to_string(&self) -> String{
-       return format!("{}\n{}\n{}\n{}\n{}\n{}",self.http_version,self.method,self.path,self.gzip,self.brotli,self.deflate);
+    pub fn to_string(&self) -> String {
+        return format!(
+            "{}\n{}\n{}\n{}\n{}\n{}",
+            self.http_version, self.method, self.path, self.gzip, self.brotli, self.deflate
+        );
     }
 }
 // site version
@@ -73,7 +83,7 @@ impl Request {
 //         Some(version) => version.trim().to_string(),
 //         None => return Err(()),
 //     };
-    
+
 //     Ok( Request {
 //         http_version: http_version,
 //         method: method,
