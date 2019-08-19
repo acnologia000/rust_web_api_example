@@ -119,27 +119,36 @@ fn main() {
 
 fn home(mut stream: TcpStream, request: request_proc::Request) {
     println!("{}", request.to_string());
-    stream.write(format!("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home <br> request was {} ",request.to_string()).as_bytes()).expect("failed to write");
+    match stream.write(format!("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from home <br> request was {} ",request.to_string()).as_bytes()){
+        Err(err) => println!("> write error : {}", err),
+        Ok(_val) => {}
+    }
 }
 
 fn route1(mut stream: TcpStream) {
-    stream
+    match stream
         .write("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from route 1".as_bytes())
-        .expect("failed to write");
+    {
+        Err(err) => println!("> write error : {}", err),
+        Ok(_val) => {}
+    }
 }
 
 fn route2(mut stream: TcpStream) {
-    stream
+    match stream
         .write("HTTP/1.1 200 OK \nContent-Type: text/html \r\n\r\n hello from route 2".as_bytes())
-        .expect("failed to write");
+    {
+        Err(err) => println!("> write error : {}", err),
+        Ok(_val) => {}
+    }
 }
 
 fn err(mut stream: TcpStream) {
-    stream
-        .write(
-            "HTTP/1.1 404 Not Found \nContent-Type: text/html \r\n\r\n hello from route 2"
-                .as_bytes(),
-        )
-        .expect("failed to write");
+    match stream.write(
+        "HTTP/1.1 404 Not Found \nContent-Type: text/html \r\n\r\n hello from route 2".as_bytes(),
+    ) {
+        Err(err) => println!("> write error : {}", err),
+        Ok(_val) => {}
+    }
 }
 // set env var for speed optimization during release build <RUSTFLAGS="-C target-cpu=native">
